@@ -1,5 +1,6 @@
 # 不動産情報ライブラリの公開API 仕様(OpenAPI)
 
+[Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/tatsuiman/reinfolib-api-spec/main/openapi.yaml)
 
 [不動産情報ライブラリの公開API](https://www.reinfolib.mlit.go.jp/help/apiManual/#titleApi4)を参考に作成しました。
 
