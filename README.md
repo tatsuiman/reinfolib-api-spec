@@ -1,4 +1,4 @@
-# 不動産情報ライブラリの公開API 仕様(OpenAPI)
+# 不動産情報ライブラリの公開API 非公式仕様書(OpenAPI)
 
 [API利用申請](https://www.reinfolib.mlit.go.jp/api/request/)
 
