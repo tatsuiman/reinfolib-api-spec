@@ -1,0 +1,2941 @@
+openapi: 3.0.0
+info:
+  title: 不動産情報ライブラリの公開API
+  version: "1.0"
+servers:
+  - url: https://www.reinfolib.mlit.go.jp/ex-api/external/
+paths:
+  /XIT001:
+    get:
+      summary: 不動産価格（取引価格・成約価格）情報取得
+      description: 下記パラメータを指定することで、不動産価格（取引価格・成約価格）情報を取得することができます。
+      operationId: getRealEstatePriceInfo
+      parameters:
+        - name: priceClassification
+          in: query
+          description: "価格情報区分コード 01: 不動産取引価格情報のみ 02: 成約価格情報のみ 未指定: 両方"
+          required: false
+          schema:
+            type: string
+            pattern: '^\d{2}$'
+          example: "01"
+        - name: year
+          in: query
+          description: 取引時期（年）
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}$'
+          example: "2024"
+        - name: quarter
+          in: query
+          description: "取引時期（四半期）N … 1～4（1:1月～3月、2:4月～6月、3:7月～10月、4:11月～12月）"
+          required: false
+          schema:
+            type: string
+            pattern: '^\d{1}$'
+          example: "3"
+        - name: area
+          in: query
+          description: 都道府県コード
+          required: false
+          schema:
+            type: string
+            pattern: '^\d{2}$'
+          example: "13"
+        - name: city
+          in: query
+          description: 市区町村コード
+          required: false
+          schema:
+            type: string
+            pattern: '^\d{5}$'
+          example: "13101"
+        - name: station
+          in: query
+          description: "駅コード 国土数値情報の駅データ（鉄道データの下位クラス）のグループコード（N02_005g）を指定します。"
+          required: false
+          schema:
+            type: string
+          example: "N02_005g"
+        - name: language
+          in: query
+          description: 出力結果の言語
+          required: false
+          schema:
+            type: string
+            enum:
+              - ja
+              - en
+          example: "ja"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: FeatureCollection
+                  features:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: Feature
+                        properties:
+                          type: object
+                          properties:
+                            Type:
+                              type: string
+                              description: 取引の種類
+                            Region:
+                              type: string
+                              description: 地区
+                            MunicipalityCode:
+                              type: string
+                              description: 市区町村コード
+                            Prefecture:
+                              type: string
+                              description: 都道府県名
+                            Municipality:
+                              type: string
+                              description: 市区町村名
+                            DistrictName:
+                              type: string
+                              description: 地区名
+                            TradePrice:
+                              type: string
+                              description: 取引価格（総額）
+                            PricePerUnit:
+                              type: string
+                              description: 坪単価
+                            FloorPlan:
+                              type: string
+                              description: 間取り
+                            Area:
+                              type: string
+                              description: 面積（平方メートル）
+                            UnitPrice:
+                              type: string
+                              description: 取引価格（平方メートル単価）
+                            LandShape:
+                              type: string
+                              description: 土地の形状
+                            Frontage:
+                              type: string
+                              description: 間口
+                            TotalFloorArea:
+                              type: string
+                              description: 延床面積（平方メートル）
+                            BuildingYear:
+                              type: string
+                              description: 建築年
+                            Structure:
+                              type: string
+                              description: 建物の構造
+                            Use:
+                              type: string
+                              description: 用途
+                            Purpose:
+                              type: string
+                              description: 今後の利用目的
+                            Direction:
+                              type: string
+                              description: 前面道路：方位
+                            Classification:
+                              type: string
+                              description: 前面道路：種類
+                            Breadth:
+                              type: string
+                              description: 前面道路：幅員（m）
+                            CityPlanning:
+                              type: string
+                              description: 都市計画
+                            CoverageRatio:
+                              type: string
+                              description: 建蔽率（%）
+                            FloorAreaRatio:
+                              type: string
+                              description: 容積率（%）
+                            Period:
+                              type: string
+                              description: 取引時点
+                            Renovation:
+                              type: string
+                              description: 改装
+                            Remarks:
+                              type: string
+                              description: 取引の事情等
+  /XIT002:
+    get:
+      summary: 都道府県内市区町村一覧取得
+      operationId: getMunicipalitiesInPrefecture
+      description: |
+        下記パラメータを指定することで、都道府県内市区町村一覧を取得することができます。
+      parameters:
+        - name: area
+          in: query
+          description: 都道府県コード
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{2}$'
+          example: "13"
+        - name: language
+          in: query
+          description: 出力結果の言語
+          required: false
+          schema:
+            type: string
+            enum:
+              - ja
+              - en
+          example: "ja"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cities:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: 市区町村コード
+                        name:
+                          type: string
+                          description: 市区町村名（指定された言語に応じて日本語または英語）
+              examples:
+                responseExample:
+                  value:
+                    cities:
+                      - id: "13101"
+                        name: "千代田区"
+                      - id: "13102"
+                        name: "中央区"
+  /XCT001:
+    get:
+      summary: "鑑定評価書情報取得"
+      operationId: getAppraisalReportInfo
+      description: "指定された年度、地区、用途区分に基づき鑑定評価書情報を提供します。"
+      parameters:
+        - name: year
+          in: query
+          description: "価格時点の年を表します（形式: YYYY）。"
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}$'
+          example: "2024"
+        - name: area
+          in: query
+          description: "都道府県コード（NN形式）。都道府県内市区町村一覧取得APIを参照。"
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{2}$'
+          example: "13"
+        - name: division
+          in: query
+          description: "用途区分コード（NN形式）。例えば、'00'は住宅地、'05'は商業地。"
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{2}$'
+          example: "00"
+      responses:
+        '200':
+          description: "成功時のレスポンス。"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valuationDate:
+                    type: string
+                    description: "価格時点。"
+                  municipalityCodePrefecture:
+                    type: string
+                    description: "県コード。"
+                  municipalityCodeCity:
+                    type: string
+                    description: "市区町村コード。"
+                  districtName:
+                    type: string
+                    description: "地域名。"
+                  useClassificationCode:
+                    type: string
+                    description: "用途区分コード。"
+                  sequenceNumber:
+                    type: string
+                    description: "連番。"
+                  pricePerSquareMeter:
+                    type: string
+                    description: "1㎡当たりの価格。"
+                  roadPriceYear:
+                    type: string
+                    description: "路線価の年。"
+                  roadPriceInheritanceTax:
+                    type: string
+                    description: "相続税路線価。"
+                  roadPriceMultiplier:
+                    type: string
+                    description: "倍率。"
+                  roadPriceMultiplierType:
+                    type: string
+                    description: "倍率種別。"
+                  locationNumber:
+                    type: string
+                    description: "所在地番。"
+                  residenceDisplayName:
+                    type: string
+                    description: "住居表示。"
+                  temporaryExchangeLandNumber:
+                    type: string
+                    description: "仮換地番号。"
+                  landArea:
+                    type: string
+                    description: "地積。"
+                  privateRoadPart:
+                    type: string
+                    description: "内私道分。"
+                  shape:
+                    type: string
+                    description: "形状。"
+                  shapeRatioFrontage:
+                    type: string
+                    description: "形状比・間口。"
+                  shapeRatioDepth:
+                    type: string
+                    description: "形状比・奥行。"
+                  shapeDirection:
+                    type: string
+                    description: "形状・方位。"
+                  shapeFlatness:
+                    type: string
+                    description: "平坦。"
+                  shapeSlope:
+                    type: string
+                    description: "傾斜度。"
+                  currentLandUse:
+                    type: string
+                    description: "土地利用の現況。"
+                  buildingStructureCode:
+                    type: string
+                    description: "構造コード。"
+                  buildingFloorsAboveGround:
+                    type: string
+                    description: "地上階数。"
+                  buildingFloorsBelowGround:
+                    type: string
+                    description: "地下階数。"
+                  surroundingLandUse:
+                    type: string
+                    description: "周辺の利用状況。"
+                  frontRoadSituationDirection:
+                    type: string
+                    description: "前面道路の方位。"
+                  frontRoadSituationStationFrontClassification:
+                    type: string
+                    description: "駅前区分。"
+                  frontRoadSituationElevation:
+                    type: string
+                    description: "高低位置。"
+                  frontRoadSituationWidth:
+                    type: string
+                    description: "道路幅員。"
+                  frontRoadSituationPavement:
+                    type: string
+                    description: "舗装状況。"
+                  frontRoadSituationRoadType:
+                    type: string
+                    description: "道路種別。"
+                  sideRoadSituationDirection:
+                    type: string
+                    description: "側道方位。"
+                  sideRoadSituationInterface:
+                    type: string
+                    description: "側道等接面状況。"
+                  utilitiesWater:
+                    type: string
+                    description: "水道。"
+                  utilitiesGas:
+                    type: string
+                    description: "ガス。"
+                  utilitiesSewer:
+                    type: string
+                    description: "下水道。"
+                  transportationFacilitiesSituation:
+                    type: string
+                    description: "交通施設の状況。"
+                  transportationFacilitiesDistance:
+                    type: string
+                    description: "距離。"
+                  transportationFacilitiesProximityClassification:
+                    type: string
+                    description: "近接区分。"
+                  legalRegulationsAreaClassification:
+                    type: string
+                    description: "区域区分。"
+                  legalRegulationsLandUse:
+                    type: string
+                    description: "用途地域。"
+                  legalRegulationsDesignatedBuildingCoverageRatio:
+                    type: string
+                    description: "指定建蔽率。"
+                  legalRegulationsDesignatedFloorAreaRatio:
+                    type: string
+                    description: "指定容積率。"
+                  legalRegulationsFireproofArea:
+                    type: string
+                    description: "防火地域。"
+                  legalRegulationsForestLaw:
+                    type: string
+                    description: "森林法。"
+                  legalRegulationsNaturalParkLaw:
+                    type: string
+                    description: "自然公園法。"
+                  legalRegulationsOther1:
+                    type: string
+                    description: "その他地域地区等1。"
+                  legalRegulationsOther2:
+                    type: string
+                    description: "その他地域地区等2。"
+                  legalRegulationsOther3:
+                    type: string
+                    description: "その他地域地区等3。"
+                  legalRegulationsOtherHighArea1Type:
+                    type: string
+                    description: "高度地区1の種。"
+                  legalRegulationsOtherHighArea1Classification:
+                    type: string
+                    description: "高度地区1の高度区分。"
+                  legalRegulationsOtherHighArea1Height:
+                    type: string
+                    description: "高度地区1の高度。"
+                  legalRegulationsOtherHighArea2Type:
+                    type: string
+                    description: "高度地区2の種。"
+                  legalRegulationsOtherHighArea2Classification:
+                    type: string
+                    description: "高度地区2の高度区分。"
+                  legalRegulationsOtherHighArea2Height:
+                    type: string
+                    description: "高度地区2の高度。"
+                  legalRegulationsStandardBuildingCoverageRatio:
+                    type: string
+                    description: "基準建蔽率。"
+                  legalRegulationsStandardFloorAreaRatio:
+                    type: string
+                    description: "基準容積率。"
+                  legalRegulationsEnvironmentalCode1:
+                    type: string
+                    description: "自然環境等コード1。"
+                  legalRegulationsEnvironmentalCode2:
+                    type: string
+                    description: "自然環境等コード2。"
+                  legalRegulationsEnvironmentalCode3:
+                    type: string
+                    description: "自然環境等コード3。"
+                  legalRegulationsEnvironmentalText:
+                    type: string
+                    description: "自然環境等文言。"
+                  appraisalMethodTransactionExampleComparisonMethodBenchmarkPrice:
+                    type: string
+                    description: "取引事例比較法比準価格。"
+                  appraisalMethodDeductionMethodDeductedPrice:
+                    type: string
+                    description: "控除法　控除後価格。"
+                  appraisalMethodIncomeCapitalizationMethodRevenuePrice:
+                    type: string
+                    description: "収益還元法 収益価格。"
+                  appraisalMethodCostMethodAccumulatedPrice:
+                    type: string
+                    description: "原価法 積算価格。"
+                  appraisalMethodDevelopmentMethodDevelopmentPrice:
+                    type: string
+                    description: "開発法 開発法による価格。"
+                  benchmarkPriceCalculationExampleATransactionPrice:
+                    type: string
+                    description: "比準価格算定内訳事例a 取引価格。"
+                  benchmarkPriceCalculationExampleAEstimatedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例a 推定価格。"
+                  benchmarkPriceCalculationExampleAStandardPrice:
+                    type: string
+                    description: "比準価格算定内訳事例a 標準価格。"
+                  benchmarkPriceCalculationExampleAAssessedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例a 査定価格。"
+                  benchmarkPriceCalculationExampleBTransactionPrice:
+                    type: string
+                    description: "比準価格算定内訳事例b 取引価格。"
+                  benchmarkPriceCalculationExampleBEstimatedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例b 推定価格。"
+                  benchmarkPriceCalculationExampleBStandardPrice:
+                    type: string
+                    description: "比準価格算定内訳事例b 標準価格。"
+                  benchmarkPriceCalculationExampleBAssessedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例b 査定価格。"
+                  benchmarkPriceCalculationExampleCTransactionPrice:
+                    type: string
+                    description: "比準価格算定内訳事例c 取引価格。"
+                  benchmarkPriceCalculationExampleCEstimatedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例c 推定価格。"
+                  benchmarkPriceCalculationExampleCStandardPrice:
+                    type: string
+                    description: "比準価格算定内訳事例c 標準価格。"
+                  benchmarkPriceCalculationExampleCAssessedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例c 査定価格。"
+                  benchmarkPriceCalculationExampleDTransactionPrice:
+                    type: string
+                    description: "比準価格算定内訳事例d 取引価格。"
+                  benchmarkPriceCalculationExampleDEstimatedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例d 推定価格。"
+                  benchmarkPriceCalculationExampleDStandardPrice:
+                    type: string
+                    description: "比準価格算定内訳事例d 標準価格。"
+                  benchmarkPriceCalculationExampleDAssessedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例d 査定価格。"
+                  benchmarkPriceCalculationExampleETransactionPrice:
+                    type: string
+                    description: "比準価格算定内訳事例e 取引価格。"
+                  benchmarkPriceCalculationExampleEEstimatedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例e 推定価格。"
+                  benchmarkPriceCalculationExampleEStandardPrice:
+                    type: string
+                    description: "比準価格算定内訳事例e 標準価格。"
+                  benchmarkPriceCalculationExampleEAssessedPrice:
+                    type: string
+                    description: "比準価格算定内訳事例e 査定価格。"
+                  accumulatedPriceCalculationBaseLandAcquisitionPrice:
+                    type: string
+                    description: "積算価格算定内訳素地の取得価格。"
+                  accumulatedPriceCalculationBaseDevelopmentCost:
+                    type: string
+                    description: "積算価格算定内訳造成工事費。"
+                  accumulatedPriceCalculationBaseReplacementCost:
+                    type: string
+                    description: "積算価格算定内訳再調達原価。"
+                  revenuePriceCalculationTotalRevenue:
+                    type: string
+                    description: "収益価格算定内訳総収益。"
+                  revenuePriceCalculationTotalCost:
+                    type: string
+                    description: "収益価格算定内訳総費用。"
+                  revenuePriceCalculationNetRevenue:
+                    type: string
+                    description: "収益価格算定内訳純収益。"
+                  revenuePriceCalculationBuildingAttributableNetRevenue:
+                    type: string
+                    description: "収益価格算定内訳建物に帰属する純収益。"
+                  revenuePriceCalculationLandAttributableNetRevenue:
+                    type: string
+                    description: "収益価格算定内訳土地に帰属する純収益。"
+                  revenuePriceCalculationAdjustedNetRevenue:
+                    type: string
+                    description: "収益価格算定内訳未収入期間修正後の純収益。"
+                  revenuePriceCalculationYieldRate:
+                    type: string
+                    description: "収益価格算定内訳還元利回り。"
+                  developmentMethodPriceCalculationTotalPresentValueOfIncome:
+                    type: string
+                    description: "開発法価格算定内訳 収入の現価の総和。"
+                  developmentMethodPriceCalculationTotalPresentValueOfExpenditure:
+                    type: string
+                    description: "開発法価格算定内訳 支出の現価の総和。"
+                  developmentMethodPriceCalculationInvestedCapitalReturnRate:
+                    type: string
+                    description: "開発法価格算定内訳 投下資本収益率。"
+                  developmentMethodPriceCalculationUnitSellingPriceHousing:
+                    type: string
+                    description: "開発法価格算定内訳 販売単価(住宅)。"
+                  developmentMethodPriceCalculationDivisibleFloorArea:
+                    type: string
+                    description: "開発法価格算定内訳 分譲可能床面積。"
+                  developmentMethodPriceCalculationConstructionCost:
+                    type: string
+                    description: "開発法価格算定内訳 建築工事費。"
+                  developmentMethodPriceCalculationFloorArea:
+                    type: string
+                    description: "開発法価格算定内訳 延床面積。"
+                  publicPrice:
+                    type: string
+                    description: "公示価格。"
+                  changeRate:
+                    type: string
+                    description: "変動率。"
+                  latitude:
+                    type: string
+                    description: "緯度。"
+                  longitude:
+                    type: string
+                    description: "経度。"
+  /XPT001:
+    get:
+      summary: 不動産価格（取引価格・成約価格）情報のポイントデータ取得
+      operationId: getRealEstatePricePointData
+      description: 下記パラメータを指定することで、不動産価格（取引価格・成約価格）情報のポイント（点）データを取得することができます。
+      parameters:
+        - name: response_format
+          in: query
+          description: "応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。"
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: "XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。"
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 12
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3456
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7890
+        - name: from
+          in: query
+          description: "取引時期FromをYYYYN形式で指定します（Nは四半期）。例: 20053は2005年第3四半期。"
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{5}$'
+          example: "20053"
+        - name: to
+          in: query
+          description: "取引時期ToをYYYYN形式で指定します（Nは四半期）。例: 20243は2024年第3四半期。"
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{5}$'
+          example: "20243"
+        - name: priceClassification
+          in: query
+          description: "価格情報区分コード。`01`は不動産取引価格情報のみ、`02`は成約価格情報のみ、未指定は両方を含みます。"
+          required: false
+          schema:
+            type: string
+            pattern: '^\d{2}$'
+          example: "01"
+        - name: landTypeCode
+          in: query
+          description: |
+            種類コードを指定します。複数指定する場合はカンマ区切り。
+            - 01: 宅地（土地）
+            - 02: 宅地（土地と建物）
+            - 07: 中古マンション等
+            - 10: 農地
+            - 11: 林地
+            未指定はすべての種類を含みます。
+          required: false
+          schema:
+            type: string
+          example: "01,02,07"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: FeatureCollection
+                  features:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: Feature
+                        properties:
+                          type: object
+                          properties:
+                            point_id:
+                              type: string
+                              description: 地点ID
+                            target_year_name_ja:
+                              type: string
+                              description: 対象年
+                            land_price_type:
+                              type: string
+                              description: 地価区分
+                            duplication_flag:
+                              type: string
+                              description: 重複フラグ
+                            prefecture_code:
+                              type: string
+                              description: 都道府県コード
+                            prefecture_name_ja:
+                              type: string
+                              description: 都道府県名
+                            city_code:
+                              type: string
+                              description: 市区町村コード
+                            use_category_name_ja:
+                              type: string
+                              description: 用途区分名
+                            standard_lot_number_ja:
+                              type: string
+                              description: 標準地/基準地番号
+                            city_county_name_ja:
+                              type: string
+                              description: 市郡名
+                            ward_town_village_name_ja:
+                              type: string
+                              description: 区町村名
+                            place_name_ja:
+                              type: string
+                              description: 地名
+                            residence_display_name_ja:
+                              type: string
+                              description: 住居表示
+                            location_number_ja:
+                              type: string
+                              description: 所在及び地番
+                            u_current_years_price_ja:
+                              type: string
+                              description: 当年価格
+                            last_years_price:
+                              type: string
+                              description: 前年価格
+                            year_on_year_change_rate:
+                              type: string
+                              description: 対前年変動率
+                            u_cadastral_ja:
+                              type: string
+                              description: 地積
+                            frontage_ratio:
+                              type: string
+                              description: 間口比率
+                            depth_ratio:
+                              type: string
+                              description: 奥行き比率
+                            building_structure_name_ja:
+                              type: string
+                              description: 構造
+                            u_ground_hierarchy_ja:
+                              type: string
+                              description: 地上階層
+                            u_underground_hierarchy_ja:
+                              type: string
+                              description: 地下階層
+                            front_road_name_ja:
+                              type: string
+                              description: 前面道路区分
+                            front_road_azimuth_name_ja:
+                              type: string
+                              description: 前面道路の方位区分
+                            front_road_width:
+                              type: string
+                              description: 前面道路の幅員
+                            front_road_pavement_condition:
+                              type: string
+                              description: 前面道路の舗装状況
+                            side_road_azimuth_name_ja:
+                              type: string
+                              description: 側道の方位区分
+                            side_road_name_ja:
+                              type: string
+                              description: 側道区分
+                            gas_supply_availability:
+                              type: string
+                              description: ガスの有無
+                            water_supply_availability:
+                              type: string
+                              description: 水道の有無
+                            sewer_supply_availability:
+                              type: string
+                              description: 下水道の有無
+                            nearest_station_name_ja:
+                              type: string
+                              description: 最寄り駅名
+                            proximity_to_transportation_facilities:
+                              type: string
+                              description: 交通施設との近接区分
+                            u_road_distance_to_nearest_station_name_ja:
+                              type: string
+                              description: 最寄り駅までの道路距離
+                            usage_status_name_ja:
+                              type: string
+                              description: 利用現況
+                            current_usage_status_of_surrounding_land_name_ja:
+                              type: string
+                              description: 周辺の土地の利用現況
+                            area_division_name_ja:
+                              type: string
+                              description: 区域区分
+                            regulations_use_category_name_ja:
+                              type: string
+                              description: 法規制・用途区分
+                            regulations_altitude_district_name_ja:
+                              type: string
+                              description: 法規制・高度地区
+                            regulations_fireproof_name_ja:
+                              type: string
+                              description: 法規制・防火・準防火
+                            u_regulations_building_coverage_ratio_ja:
+                              type: string
+                              description: 法規制・建蔽率
+                            u_regulations_floor_area_ratio_ja:
+                              type: string
+                              description: 法規制・容積率
+                            regulations_forest_law_name_ja:
+                              type: string
+                              description: 法規制・森林法
+                            regulations_park_law_name_ja:
+                              type: string
+                              description: 法規制・公園法
+                            pause_flag:
+                              type: string
+                              description: 休止フラグ
+                            usage_category_name_ja:
+                              type: string
+                              description: 利用区分名
+                            location:
+                              type: string
+                              description: 所在及び地番
+                            shape:
+                              type: string
+                              description: 形状（間口：奥行き）
+                            front_road_condition:
+                              type: string
+                              description: 前面道路の状況
+                            side_road_condition:
+                              type: string
+                              description: その他の接面道路
+                            park_forest_law:
+                              type: string
+                              description: 森林法、公園法、自然環境等
+
+  /XPT002:
+    get:
+      summary: 地価公示・地価調査のポイントデータ取得
+      operationId: getLandPricePointData
+      description: 下記パラメータを指定することで、地価公示・地価調査のポイント（点）データを得ることができます。
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: "XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。"
+          required: true
+          schema:
+            type: integer
+            minimum: 13
+            maximum: 15
+          example: 14
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3456
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7890
+        - name: year
+          in: query
+          description: "対象年をNNNN形式で指定します。範囲は1970年から最新年までです。"
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}$'
+          example: "2024"
+        - name: priceClassification
+          in: query
+          description: "地価情報区分コードを指定します。`0`は国土交通省地価公示のみ、`1`は都道府県地価調査のみ、未指定は両方を含みます。"
+          required: false
+          schema:
+            type: string
+            pattern: '^\d{1}$'
+          example: "0"
+        - name: useCategoryCode
+          in: query
+          description: |
+            用途区分コードを指定します。複数指定する場合はカンマ区切り。
+            - 00: 住宅地
+            - 03: 宅地見込地
+            - 05: 商業地
+            - 07: 準工業地
+            - 09: 工業地
+            - 10: 市街地調整区域内の現況宅地
+            - 13: 市街地調整区域内の現況林地（国土交通省地価公示のみ）
+            - 20: 林地（都道府県地価調査のみ）
+            未指定はすべての用途区分を含みます。
+          required: false
+          schema:
+            type: string
+          example: "00,05"
+      responses:
+        '200':
+          description: 成功
+
+  /XKT001:
+    get:
+      summary: 都市計画決定GISデータ（都市計画区域/区域区分）取得
+      description: 下記パラメータを指定することで、都市計画決定GISデータ（都市計画区域/区域区分）を取得することができます。
+      operationId: getUrbanPlanningGISDataUrbanPlanningAreaAndClassification
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  urbanPlanningAreaAndClassificationData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        prefecture:
+                          type: string
+                          description: 都道府県名
+                        city_code:
+                          type: string
+                          description: 市区町村コード
+                        city_name:
+                          type: string
+                          description: 市区町村名
+                        kubun_id:
+                          type: string
+                          description: 区分コード
+                        decision_date:
+                          type: string
+                          description: 設定年月日
+                        decision_classification:
+                          type: string
+                          description: 設定区分
+                        decision_maker:
+                          type: string
+                          description: 設定者名
+                        announcement_number:
+                          type: string
+                          description: 告示番号
+                        area_classification_ja:
+                          type: string
+                          description: 区域区分
+
+
+  /XKT002:
+    get:
+      summary: 都市計画決定GISデータ（用途地域）取得
+      description: 下記パラメータを指定することで、都市計画決定GISデータ（用途地域）を取得することができます。
+      operationId: getUrbanPlanningGISDataUseDistrict
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  useDistrictData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        youto_id:
+                          type: string
+                          description: 用途地域分類
+                        prefecture:
+                          type: string
+                          description: 都道府県名
+                        city_code:
+                          type: string
+                          description: 市区町村コード
+                        city_name:
+                          type: string
+                          description: 市区町村名
+                        decision_date:
+                          type: string
+                          description: 区域設定年月日
+                        decision_classification:
+                          type: string
+                          description: 設定区分
+                        decision_maker:
+                          type: string
+                          description: 設定者名
+                        announcement_number:
+                          type: string
+                          description: 告示番号
+                        use_area_ja:
+                          type: string
+                          description: 用途地域名
+                        u_floor_area_ratio_ja:
+                          type: string
+                          description: 容積率
+                        u_building_coverage_ratio_ja:
+                          type: string
+                          description: 建蔽率
+
+
+  /XKT003:
+    get:
+      summary: 都市計画決定GISデータ（立地適正化計画区域）取得
+      description: 下記パラメータを指定することで、都市計画決定GISデータ（立地適正化計画区域）を取得することができます。
+      operationId: getUrbanPlanningGISDataLocationSuitabilityPlanArea
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  locationSuitabilityPlanAreaData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        prefecture:
+                          type: string
+                          description: 都道府県名
+                        city_code:
+                          type: string
+                          description: 行政区域コード
+                        city_name:
+                          type: string
+                          description: 市町村名
+                        decision_date:
+                          type: string
+                          description: 区域設定年月日
+                        decision_classification:
+                          type: string
+                          description: 設定区分
+                        decision_maker:
+                          type: string
+                          description: 設定者名
+                        announcement_number:
+                          type: string
+                          description: 告示番号
+                        kubun_id:
+                          type: string
+                          description: 区域コード
+                        kubun_name_ja:
+                          type: string
+                          description: 区域名
+                        area_classification_ja:
+                          type: string
+                          description: 区域名称
+
+
+  /XKT004:
+    get:
+      summary: 国土数値情報（小学校区）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（小学校区）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoElementarySchoolZoneData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+        - name: administrativeAreaCode
+          in: query
+          description: 行政区域コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "13101,13102"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  elementarySchoolZoneData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        A27_001:
+                          type: string
+                          description: 行政区域コード
+                        A27_002:
+                          type: string
+                          description: 設置主体
+                        A27_003:
+                          type: string
+                          description: 学校コード
+                        A27_004_ja:
+                          type: string
+                          description: 名称
+                        A27_005:
+                          type: string
+                          description: 所在地
+
+
+  /XKT005:
+    get:
+      summary: 国土数値情報（中学校区）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（中学校区）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoJuniorHighSchoolDistrictData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 14
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3456
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7890
+        - name: administrativeAreaCode
+          in: query
+          description: 行政区域コードを指定します。複数指定する場合はカンマ区切り。行政区域コードの詳細は[こちら](https://nlftp.mlit.go.jp/ksj/gml/codelist/AdminiBoundary_CD.xlsx)を参照してください。
+          required: false
+          schema:
+            type: string
+          example: "13101,13102"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  juniorHighSchoolDistrictData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        administrativeAreaCode:
+                          type: string
+                          description: 行政区域コード
+                        setupEntity:
+                          type: string
+                          description: 設置主体
+                        schoolCode:
+                          type: string
+                          description: 学校コード
+                        name_ja:
+                          type: string
+                          description: 学校の名称
+                        location:
+                          type: string
+                          description: 所在地
+
+  /XKT006:
+    get:
+      summary: 国土数値情報（学校）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（学校）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoSchoolData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 13
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schoolData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        administrativeAreaCode:
+                          type: string
+                          description: 行政区域コード
+                        schoolCode:
+                          type: string
+                          description: 学校コード
+                        schoolCategoryCode:
+                          type: string
+                          description: 学校分類コード
+                        schoolCategoryName_ja:
+                          type: string
+                          description: 学校分類名
+                        name_ja:
+                          type: string
+                          description: 学校の名称
+                        location_ja:
+                          type: string
+                          description: 所在地
+                        managerCode:
+                          type: string
+                          description: 管理者コード
+                        closureDivision:
+                          type: string
+                          description: 休校区分
+  /XKT007:
+    get:
+      summary: 国土数値情報（保育園・幼稚園等）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（保育園・幼稚園等）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoPreschoolData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 13
+            maximum: 15
+          example: 14
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      kindergartenData:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            administrativeAreaCode:
+                              type: string
+                              description: 行政区域コード
+                            preSchoolName_ja:
+                              type: string
+                              description: 名称
+                            schoolCode:
+                              type: string
+                              description: 学校コード
+                            schoolClassCode:
+                              type: string
+                              description: 学校分類コード
+                            schoolClassCode_name_ja:
+                              type: string
+                              description: 学校分類名
+                            location_ja:
+                              type: string
+                              description: 所在地
+                            administratorCode:
+                              type: string
+                              description: 管理者コード
+                            closeSchoolCode:
+                              type: string
+                              description: 休校コード
+                  - type: object
+                    properties:
+                      nurserySchoolData:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            administrativeAreaCode:
+                              type: string
+                              description: 行政区域コード
+                            preSchoolName_ja:
+                              type: string
+                              description: 名称
+                            welfareFacilityClassCode:
+                              type: string
+                              description: 福祉施設大分類コード
+                            welfareFacilityMiddleClassCode:
+                              type: string
+                              description: 福祉施設中分類コード
+                            welfareFacilityMinorClassCode:
+                              type: string
+                              description: 福祉施設小分類コード
+                            location_ja:
+                              type: string
+                              description: 所在地
+                            administratorCode:
+                              type: string
+                              description: 管理者コード
+  /XKT010:
+    get:
+      summary: 国土数値情報（医療機関）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（医療機関）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoMedicalInstitutionData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 13
+            maximum: 15
+          example: 14
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  medicalInstitutionData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        P04_001:
+                          type: string
+                          description: 医療機関分類
+                        P04_001_name_ja:
+                          type: string
+                          description: 医療機関分類名
+                        P04_002_ja:
+                          type: string
+                          description: 施設名称
+                        P04_003_ja:
+                          type: string
+                          description: 所在地
+                        P04_004:
+                          type: string
+                          description: 診療科目１
+                        P04_005:
+                          type: string
+                          description: 診療科目２
+                        P04_006:
+                          type: string
+                          description: 診療科目３
+                        P04_007:
+                          type: string
+                          description: 開設者分類
+                        P04_008:
+                          type: integer
+                          description: 病床数
+                        P04_009:
+                          type: string
+                          description: 救急告示病院
+                        P04_010:
+                          type: string
+                          description: 災害拠点病院
+                        medical_subject_ja:
+                          type: array
+                          items:
+                            type: string
+                          description: 診療科目
+
+  /XKT011:
+    get:
+      summary: 国土数値情報（福祉施設）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（福祉施設）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoWelfareFacilityData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 13
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+        - name: administrativeAreaCode
+          in: query
+          description: 行政区域コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "13101,13102"
+        - name: welfareFacilityClassCode
+          in: query
+          description: 福祉施設大分類コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "01,02"
+        - name: welfareFacilityMiddleClassCode
+          in: query
+          description: 福祉施設中分類コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "0101,0201"
+        - name: welfareFacilityMinorClassCode
+          in: query
+          description: 福祉施設小分類コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "020101,020102"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  P14_001:
+                    type: string
+                    description: 都道府県名
+                  P14_002:
+                    type: string
+                    description: 市区町村名
+                  P14_003:
+                    type: string
+                    description: 行政区域コード
+                  P14_004_ja:
+                    type: string
+                    description: 所在地
+                  P14_005:
+                    type: string
+                    description: 福祉施設大分類コード
+                  P14_005_name_ja:
+                    type: string
+                    description: 福祉施設大分類名
+                  P14_006:
+                    type: string
+                    description: 福祉施設中分類コード
+                  P14_006_name_ja:
+                    type: string
+                    description: 福祉施設中分類名
+                  P14_007:
+                    type: string
+                    description: 福祉施設小分類コード
+                  P14_008_ja:
+                    type: string
+                    description: 名称
+                  P14_009:
+                    type: string
+                    description: 管理者コード
+                  P14_010:
+                    type: string
+                    description: 位置正確度コード
+  /XKT013:
+    get:
+      summary: 国土数値情報（将来推計人口500mメッシュ）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（将来推計人口500mメッシュ）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoFutureEstimatedPopulationMeshData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  futureEstimatedPopulationMeshData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        MESH_ID:
+                          type: string
+                          description: 分割地域メッシュコード
+                        SHICODE:
+                          type: string
+                          description: 行政区域コード
+                        PTN_20XX:
+                          type: integer
+                          description: 20XX年男女計総数人口（秘匿なし）
+                        HITOKU_20XX:
+                          type: string
+                          description: 20XX年秘匿記号
+                        GASSAN_20XX:
+                          type: string
+                          description: 20XX年合算先メッシュ
+                        PT0_20XX:
+                          type: integer
+                          description: 20XX年男女計総数人口
+                        PT1_20XX:
+                          type: integer
+                          description: 20XX年男女計0～4歳人口
+                        PT2_20XX:
+                          type: integer
+                          description: 20XX年男女計5～9歳人口
+                        PT3_20XX:
+                          type: integer
+                          description: 20XX年男女計10～14歳人口
+                        PT4_20XX:
+                          type: integer
+                          description: 20XX年男女計15～19歳人口
+                        PT5_20XX:
+                          type: integer
+                          description: 20XX年男女計20～24歳人口
+                        PT6_20XX:
+                          type: integer
+                          description: 20XX年男女計25～29歳人口
+                        PT7_20XX:
+                          type: integer
+                          description: 20XX年男女計30～34歳人口
+                        PT8_20XX:
+                          type: integer
+                          description: 20XX年男女計35～39歳人口
+                        PT9_20XX:
+                          type: integer
+                          description: 20XX年男女計40～44歳人口
+                        PT10_20XX:
+                          type: integer
+                          description: 20XX年男女計45～49歳人口
+                        PT11_20XX:
+                          type: integer
+                          description: 20XX年男女計50～54歳人口
+                        PT12_20XX:
+                          type: integer
+                          description: 20XX年男女計55～59歳人口
+                        PT13_20XX:
+                          type: integer
+                          description: 20XX年男女計60～64歳人口
+                        PT14_20XX:
+                          type: integer
+                          description: 20XX年男女計65～69歳人口
+                        PT15_20XX:
+                          type: integer
+                          description: 20XX年男女計70～74歳人口
+                        PT16_20XX:
+                          type: integer
+                          description: 20XX年男女計75～79歳人口
+                        PT17_20XX:
+                          type: integer
+                          description: 20XX年男女計80～84歳人口
+                        PT18_20XX:
+                          type: integer
+                          description: 20XX年男女計85～89歳人口
+                        PT19_20XX:
+                          type: integer
+                          description: 20XX年男女計90歳以上人口
+                        PTA_20XX:
+                          type: integer
+                          description: 20XX年男女計0～14歳人口
+                        PTB_20XX:
+                          type: integer
+                          description: 20XX年男女計15～64歳人口
+                        PTC_20XX:
+                          type: integer
+                          description: 20XX年男女計65歳以上人口
+                        PTD_20XX:
+                          type: integer
+                          description: 20XX年男女計75歳以上人口
+                        PTE_20XX:
+                          type: integer
+                          description: 20XX年男女計80歳以上人口
+                        RTA_20XX:
+                          type: string
+                          description: 20XX年男女計0～14歳人口比率
+                        RTB_20XX:
+                          type: string
+                          description: 20XX年男女計15～64歳人口比率
+                        RTC_20XX:
+                          type: string
+                          description: 20XX年男女計65歳以上人口比率
+                        RTD_20XX:
+                          type: string
+                          description: 20XX年男女計75歳以上人口比率
+                        RTE_20XX:
+                          type: string
+                          description: 20XX年男女計80歳以上人口比率
+  /XKT014:
+    get:
+      summary: 都市計画決定GISデータ（防火・準防火地域）取得
+      description: 下記パラメータを指定することで、都市計画決定GISデータ（防火・準防火地域）を取得することができます。
+      operationId: getUrbanPlanningGISDataFirePreventionArea
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  firePreventionAreaData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fire_prevention_ja:
+                          type: string
+                          description: 防火・準防火地域名
+                        kubun_id:
+                          type: string
+                          description: 区分コード
+                        prefecture:
+                          type: string
+                          description: 都道府県名
+                        city_code:
+                          type: string
+                          description: 市区町村コード
+                        city_name:
+                          type: string
+                          description: 市区町村名
+                        decision_date:
+                          type: string
+                          description: 設定年月日
+                        decision_classification:
+                          type: string
+                          description: 設定区分
+                        decision_maker:
+                          type: string
+                          description: 設定者名
+                        announcement_number:
+                          type: string
+                          description: 告示番号
+  /XKT015:
+    get:
+      summary: 国土数値情報（駅別乗降客数）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（駅別乗降客数）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoStationPassengerNumbersData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stationPassengerNumbersData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        S12_001_ja:
+                          type: string
+                          description: 駅名
+                        S12_001c:
+                          type: string
+                          description: 駅コード
+                        S12_001g:
+                          type: string
+                          description: グループコード
+                        S12_002_ja:
+                          type: string
+                          description: 運営会社
+                        S12_003_ja:
+                          type: string
+                          description: 路線名
+                        S12_004:
+                          type: string
+                          description: 鉄道区分
+                        S12_005:
+                          type: string
+                          description: 事業者種別
+                        S12_006:
+                          type: string
+                          description: 重複コード2011
+                        S12_007:
+                          type: string
+                          description: データ有無コード2011
+                        S12_008:
+                          type: string
+                          description: 備考2011
+                        S12_009:
+                          type: integer
+                          description: 乗降客数2011
+                        S12_010:
+                          type: string
+                          description: 重複コード2012
+                        S12_011:
+                          type: string
+                          description: データ有無コード2012
+                        S12_012:
+                          type: string
+                          description: 備考2012
+                        S12_013:
+                          type: integer
+                          description: 乗降客数2012
+                        S12_014:
+                          type: string
+                          description: 重複コード2013
+                        S12_015:
+                          type: string
+                          description: データ有無コード2013
+                        S12_016:
+                          type: string
+                          description: 備考2013
+                        S12_017:
+                          type: integer
+                          description: 乗降客数2013
+                        S12_018:
+                          type: string
+                          description: 重複コード2014
+                        S12_019:
+                          type: string
+                          description: データ有無コード2014
+                        S12_020:
+                          type: string
+                          description: 備考2014
+                        S12_021:
+                          type: integer
+                          description: 乗降客数2014
+                        S12_022:
+                          type: string
+                          description: 重複コード2015
+                        S12_023:
+                          type: string
+                          description: データ有無コード2015
+                        S12_024:
+                          type: string
+                          description: 備考2015
+                        S12_025:
+                          type: integer
+                          description: 乗降客数2015
+                        S12_026:
+                          type: string
+                          description: 重複コード2016
+                        S12_027:
+                          type: string
+                          description: データ有無コード2016
+                        S12_028:
+                          type: string
+                          description: 備考2016
+                        S12_029:
+                          type: integer
+                          description: 乗降客数2016
+                        S12_030:
+                          type: string
+                          description: 重複コード2017
+                        S12_031:
+                          type: string
+                          description: データ有無コード2017
+                        S12_032:
+                          type: string
+                          description: 備考2017
+                        S12_033:
+                          type: integer
+                          description: 乗降客数2017
+                        S12_034:
+                          type: string
+                          description: 重複コード2018
+                        S12_035:
+                          type: string
+                          description: データ有無コード2018
+                        S12_036:
+                          type: string
+                          description: 備考2018
+                        S12_037:
+                          type: integer
+                          description: 乗降客数2018
+                        S12_038:
+                          type: string
+                          description: 重複コード2019
+                        S12_039:
+                          type: string
+                          description: データ有無コード2019
+                        S12_040:
+                          type: string
+                          description: 備考2019
+                        S12_041:
+                          type: integer
+                          description: 乗降客数2019
+                        S12_042:
+                          type: string
+                          description: 重複コード2020
+                        S12_043:
+                          type: string
+                          description: データ有無コード2020
+                        S12_044:
+                          type: string
+                          description: 備考2020
+                        S12_045:
+                          type: integer
+                          description: 乗降客数2020
+                        S12_046:
+                          type: string
+                          description: 重複コード2021
+                        S12_047:
+                          type: string
+                          description: データ有無コード2021
+                        S12_048:
+                          type: string
+                          description: 備考2021
+                        S12_049:
+                          type: integer
+                          description: 乗降客数2021
+  /XKT016:
+    get:
+      summary: 国土数値情報（災害危険区域）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（災害危険区域）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoDisasterRiskAreaData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+        - name: administrativeAreaCode
+          in: query
+          description: 代表行政コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "13101,13102"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  disasterRiskAreaData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        A48_001:
+                          type: string
+                          description: 都道府県名
+                        A48_002:
+                          type: string
+                          description: 市町村名
+                        A48_003:
+                          type: string
+                          description: 代表行政コード
+                        A48_004:
+                          type: string
+                          description: 指定主体区分
+                        A48_005_ja:
+                          type: string
+                          description: 区域名
+                        A48_006:
+                          type: string
+                          description: 所在地
+                        A48_007:
+                          type: string
+                          description: 指定理由コード
+                        A48_007_name_ja:
+                          type: string
+                          description: 指定理由
+                        A48_008_ja:
+                          type: string
+                          description: 指定理由詳細
+                        A48_009:
+                          type: string
+                          description: 告示年月日
+                        A48_010:
+                          type: string
+                          description: 告示番号
+                        A48_011:
+                          type: string
+                          description: 根拠条例
+                        A48_012:
+                          type: string
+                          description: 面積
+                        A48_013:
+                          type: string
+                          description: 縮尺
+                        A48_014:
+                          type: string
+                          description: その他
+  /XKT017:
+    get:
+      summary: 国土数値情報（図書館）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（図書館）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoLibraryData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 13
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+        - name: administrativeAreaCode
+          in: query
+          description: 行政区域コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "13101,13102"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  libraryData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        P27_001:
+                          type: string
+                          description: 行政区域コード
+                        P27_002:
+                          type: string
+                          description: 公共施設大分類
+                        P27_003:
+                          type: string
+                          description: 公共施設小分類
+                        P27_003_name_ja:
+                          type: string
+                          description: 公共施設小分類名
+                        P27_004:
+                          type: string
+                          description: 文化施設分類
+                        P27_004_name_ja:
+                          type: string
+                          description: 文化施設分類名
+                        P27_005_ja:
+                          type: string
+                          description: 名称
+                        P27_006_ja:
+                          type: string
+                          description: 所在地
+                        P27_007:
+                          type: string
+                          description: 管理者コード
+                        P27_008:
+                          type: string
+                          description: 階数
+                        P27_009:
+                          type: string
+                          description: 建築年
+  /XKT018:
+    get:
+      summary: 国土数値情報（市区町村村役場及び集会施設等）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（市区町村村役場及び集会施設等）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoMunicipalOfficesAndCommunityFacilitiesData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 13
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  municipalOfficesAndCommunityFacilitiesData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        P05_001:
+                          type: string
+                          description: 行政区域コード
+                        P05_002:
+                          type: string
+                          description: 施設分類コード
+                        P05_002_name_ja:
+                          type: string
+                          description: 施設分類名
+                        P05_003_ja:
+                          type: string
+                          description: 名称
+                        P05_004_ja:
+                          type: string
+                          description: 所在地
+  /XKT019:
+    get:
+      summary: 国土数値情報（自然公園地域）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（自然公園地域）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoNaturalParkAreaData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 9
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+        - name: prefectureCode
+          in: query
+          description: 都道府県コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "13,14"
+        - name: districtCode
+          in: query
+          description: 地区コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "9,10"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  naturalParkAreaData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        OBJECTID:
+                          type: integer
+                          description: シェープID
+                        PREFEC_CD:
+                          type: string
+                          description: 都道府県コード
+                        AREA_CD:
+                          type: string
+                          description: 地区コード
+                        CTV_NAME:
+                          type: string
+                          description: 市町村名
+                        FIS_YEAR:
+                          type: string
+                          description: 年度
+                        THEMA_NO:
+                          type: string
+                          description: 主題番号
+                        LAYER_NO:
+                          type: string
+                          description: レイヤ番号
+                        AREA_SIZE:
+                          type: string
+                          description: ポリゴン面積(ha)
+                        IOSIDE_DIV:
+                          type: string
+                          description: 内外区分
+                        REMARK_STR:
+                          type: string
+                          description: 備考
+                        Shape_Leng:
+                          type: number
+                          format: double
+                          description: シェープの長さ
+                        Shape_Area:
+                          type: number
+                          format: double
+                          description: シェープの面積
+                        OBJ_NAME_ja:
+                          type: string
+                          description: シェープ名
+  /XKT020:
+    get:
+      summary: 大規模盛土造成地マップGISデータ取得
+      description: 下記パラメータを指定することで、大規模盛土造成地マップのGISデータを取得することができます。
+      operationId: getLargeScaleEmbankmentMapData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  largeScaleEmbankmentMapData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        embankment_classification:
+                          type: string
+                          description: 盛土造成地分類
+                        prefecture_name:
+                          type: string
+                          description: 都道府県名
+                        city_name:
+                          type: string
+                          description: 市町村名
+                        embankment_number:
+                          type: string
+                          description: 盛土造成地番号
+  /XKT021:
+    get:
+      summary: 国土数値情報（地すべり防止地区）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（地すべり防止地区）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoLandslidePreventionAreaData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+        - name: prefectureCode
+          in: query
+          description: 都道府県コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "13,14"
+        - name: administrativeAreaCode
+          in: query
+          description: 行政コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "13101,13102"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  landslidePreventionAreaData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        prefecture_code:
+                          type: string
+                          description: 都道府県コード
+                        group_code:
+                          type: string
+                          description: 行政コード
+                        city_name:
+                          type: string
+                          description: 市町村名
+                        region_name:
+                          type: string
+                          description: 区域名
+                        address:
+                          type: string
+                          description: 所在地
+                        notice_date:
+                          type: string
+                          description: 告示年月日
+                        notice_number:
+                          type: string
+                          description: 告示番号
+                        landslide_area:
+                          type: number
+                          format: double
+                          description: 指定面積（ha）
+                        charge_ministry_code:
+                          type: string
+                          description: 所管省庁コード
+                        prefecture_name:
+                          type: string
+                          description: 都道府県名
+                        charge_ministry_name:
+                          type: string
+                          description: 所管省庁名
+  /XKT022:
+    get:
+      summary: 国土数値情報（急傾斜地崩壊危険区域）GISデータ取得
+      description: 下記パラメータを指定することで、国土数値情報（急傾斜地崩壊危険区域）のGISデータを取得することができます。
+      operationId: getNationalLandNumericalInfoSteepSlopeFailureDangerAreaData
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+        - name: prefectureCode
+          in: query
+          description: 都道府県コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "13,14"
+        - name: administrativeAreaCode
+          in: query
+          description: 行政コードを指定します。複数指定する場合はカンマ区切り。
+          required: false
+          schema:
+            type: string
+          example: "13101,13102"
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  steepSlopeFailureDangerAreaData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        prefecture_code:
+                          type: string
+                          description: 都道府県コード
+                        group_code:
+                          type: string
+                          description: 行政コード
+                        city_name:
+                          type: string
+                          description: 市町村名
+                        region_name:
+                          type: string
+                          description: 区域名
+                        address:
+                          type: string
+                          description: 所在地
+                        public_notice_date:
+                          type: string
+                          description: 公示年月日
+                        public_notice_number:
+                          type: string
+                          description: 公示番号
+                        landslide_area:
+                          type: number
+                          format: double
+                          description: 指定面積（ha）
+                        prefecture_name:
+                          type: string
+                          description: 都道府県名
+  /XKT023:
+    get:
+      summary: 都市計画決定GISデータ（地区計画）取得
+      description: 下記パラメータを指定することで、都市計画決定GISデータ（地区計画）を取得することができます。
+      operationId: getUrbanPlanningGISDataDistrictPlan
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  districtPlanData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        plan_name:
+                          type: string
+                          description: 計画名
+                        plan_type_ja:
+                          type: string
+                          description: 計画区分名
+                        kubun_id:
+                          type: string
+                          description: 区分コード
+                        group_code:
+                          type: string
+                          description: 行政コード
+                        dicision_date:
+                          type: string
+                          description: 設定年月日
+                        dicision_type_ja:
+                          type: string
+                          description: 設定区分名
+                        decider_ja:
+                          type: string
+                          description: 設定者名
+                        notice_number:
+                          type: string
+                          description: 告示番号
+                        prefecture_name_ja:
+                          type: string
+                          description: 都道府県名
+                        city_name_ja:
+                          type: string
+                          description: 市町村名
+  /XKT024:
+    get:
+      summary: 都市計画決定GISデータ（高度利用地区）取得
+      description: 下記パラメータを指定することで、都市計画決定GISデータ（高度利用地区）を取得することができます。
+      operationId: getUrbanPlanningGISDataHighUseDistrict
+      parameters:
+        - name: response_format
+          in: query
+          description: 応答形式を指定します。`geojson`はGeoJSON応答、`pbf`はバイナリベクトルタイル応答です。
+          required: true
+          schema:
+            type: string
+            enum:
+              - geojson
+              - pbf
+          example: geojson
+        - name: z
+          in: query
+          description: XYZ方式におけるズームレベル（縮尺）を指定します。値が大きいほどズームレベルは高く、カバーする地理的領域は狭くなります。
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 15
+          example: 13
+        - name: x
+          in: query
+          description: XYZ方式におけるタイル座標のX値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 7272
+        - name: y
+          in: query
+          description: XYZ方式におけるタイル座標のY値を指定します。
+          required: true
+          schema:
+            type: integer
+          example: 3225
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  highUseDistrictData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        advanced_name:
+                          type: string
+                          description: 高度名称
+                        advanced_type_ja:
+                          type: string
+                          description: 高度区分名
+                        kubun_id:
+                          type: string
+                          description: 区分コード
+                        group_code:
+                          type: string
+                          description: 行政コード
+                        dicision_date:
+                          type: string
+                          description: 設定年月日
+                        dicision_type_ja:
+                          type: string
+                          description: 設定区分名
+                        decider_ja:
+                          type: string
+                          description: 設定者名
+                        notice_number:
+                          type: string
+                          description: 告示番号
+                        prefecture_name_ja:
+                          type: string
+                          description: 都道府県名
+                        city_name_ja:
+                          type: string
+                          description: 市町村名
