@@ -6,6 +6,9 @@ Swagger Editorで仕様書を確認する場合は[こちら](https://editor.swa
 
 [不動産情報ライブラリの公開API](https://www.reinfolib.mlit.go.jp/help/apiManual/#titleApi4)を参考に作成しました。
 
+## GPTsでの活用例
+![](docs/GPTs.gif)
+
 ## 都道府県コードと都道府県名の一覧
 
 | コード | 日本語表記       | 英語表記           |
