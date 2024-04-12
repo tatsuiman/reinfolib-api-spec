@@ -1,10 +1,12 @@
 # 不動産情報ライブラリの公開API 仕様(OpenAPI)
 
-[Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/tatsuiman/reinfolib-api-spec/main/openapi.yaml)
+[API利用申請](https://www.reinfolib.mlit.go.jp/api/request/)
+
+Swagger Editorで仕様書を確認する場合は[こちら](https://editor.swagger.io/?url=https://raw.githubusercontent.com/tatsuiman/reinfolib-api-spec/main/openapi.yaml)
 
 [不動産情報ライブラリの公開API](https://www.reinfolib.mlit.go.jp/help/apiManual/#titleApi4)を参考に作成しました。
 
-以下は都道府県コードと都道府県名の一覧です。
+## 都道府県コードと都道府県名の一覧
 
 | コード | 日本語表記       | 英語表記           |
 | ------ | ---------------- | ------------------ |
